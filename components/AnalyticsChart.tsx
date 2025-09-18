@@ -59,3 +59,6 @@ const AnalyticsChart = ({ title, data, type = 'bar' }: AnalyticsChartProps) => {
 
 export default AnalyticsChart;
 
+
+
+

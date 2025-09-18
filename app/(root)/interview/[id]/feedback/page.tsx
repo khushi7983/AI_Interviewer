@@ -21,6 +21,7 @@ const Feedback = async ({ params }: RouteParams) => {
     interviewId: id,
     userId: user?.id!,
   });
+  console.log('Feedback:', feedback);
 
   return (
     <section className="section-feedback">

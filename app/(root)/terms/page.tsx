@@ -61,3 +61,6 @@ async function Terms() {
 
 export default Terms;
 
+
+
+

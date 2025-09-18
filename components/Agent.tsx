@@ -34,10 +34,12 @@ const Agent = ({
   const [messages, setMessages] = useState<SavedMessage[]>([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [lastMessage, setLastMessage] = useState<string>("");
+  const [callStartedAt, setCallStartedAt] = useState<number | null>(null);
 
   useEffect(() => {
     const onCallStart = () => {
       setCallStatus(CallStatus.ACTIVE);
+      setCallStartedAt(Date.now());
     };
 
     const onCallEnd = () => {
@@ -105,14 +107,75 @@ const Agent = ({
       }
     };
 
-    if (callStatus === CallStatus.FINISHED) {
-      if (type === "generate") {
-        router.push("/");
-      } else {
-        handleGenerateFeedback(messages);
+    const saveConversation = async (
+      messagesToSave: SavedMessage[],
+      overrideInterviewId?: string
+    ) => {
+      try {
+        const durationSec = callStartedAt ? Math.round((Date.now() - callStartedAt) / 1000) : undefined;
+        const res = await fetch("/api/conversations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            interviewId: overrideInterviewId ?? interviewId,
+            userId,
+            messages: messagesToSave,
+            metadata: { durationSec },
+          }),
+        });
+        const raw = await res.text();
+        let json: any = {};
+        try { json = raw ? JSON.parse(raw) : {}; } catch { json = { parseError: true, raw }; }
+        if (!res.ok || !json?.success) {
+          console.error("Failed to save conversation", json);
+        }
+      } catch (e) {
+        console.error("Error calling /api/conversations", e);
       }
+    };
+
+    if (callStatus === CallStatus.FINISHED) {
+      const handleAfterEnd = async () => {
+        if (type === "generate") {
+          // Create a lightweight practice interview so feedback can link to it
+          try {
+            const res = await fetch("/api/interviews/practice", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userId }),
+            });
+            const json = await res.json();
+            const practiceInterviewId = json?.interviewId ?? interviewId;
+
+            // Save conversation with the newly created practice interview id
+            await saveConversation(messages, practiceInterviewId);
+
+            if (practiceInterviewId) {
+              const { success, feedbackId: id } = await createFeedback({
+                interviewId: practiceInterviewId!,
+                userId: userId!,
+                transcript: messages,
+              });
+              if (success && practiceInterviewId) {
+                router.push(`/interview/${practiceInterviewId}/feedback`);
+                return;
+              }
+            }
+          } catch (e) {
+            console.error("Practice feedback flow failed", e);
+          }
+
+          router.push("/");
+        } else {
+          // Non-practice interviews can save conversation immediately with existing interviewId
+          await saveConversation(messages);
+          handleGenerateFeedback(messages);
+        }
+      };
+
+      handleAfterEnd();
     }
-  }, [messages, callStatus, feedbackId, interviewId, router, type, userId]);
+  }, [messages, callStatus, feedbackId, interviewId, router, type, userId, callStartedAt]);
 
   const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);

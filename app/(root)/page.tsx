@@ -29,6 +29,9 @@ async function Home() {
     hasPastInterviews = (userInterviews?.length || 0) > 0;
     hasUpcomingInterviews = (allInterview?.length || 0) > 0;
   }
+  
+  console.log("User Interviews:", userInterviews);
+    console.log("All Interviews:", allInterview);
 
   return (
     <>
