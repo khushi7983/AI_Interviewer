@@ -339,6 +339,11 @@ export async function createFeedback(params: CreateFeedbackParams) {
 
     await feedbackRef.set(feedback as any);
 
+    // Update the interview document to set finalized: true
+    await db.collection("interviews").doc(interviewId).update({
+      finalized: true,
+    });
+
     return { success: true, feedbackId: feedbackRef.id };
   } catch (error: any) {
     console.error("Error saving feedback:", JSON.stringify(error, null, 2));
@@ -459,6 +464,26 @@ export async function getInterviewsByUserId(
     return sortedInterviews as Interview[];
   } catch (error: any) {
     console.error("Error fetching user interviews:", JSON.stringify(error, null, 2));
+    return [];
+  }
+}
+
+export async function getAllFeedbackByUserId(
+  userId: string
+): Promise<Feedback[] | null> {
+  if (!userId) {
+    return [];
+  }
+
+  try {
+    const querySnapshot = await db
+      .collection("feedback")
+      .where("userId", "==", userId)
+      .get();
+
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Feedback[];
+  } catch (error: any) {
+    console.error("Error fetching all feedback for user:", JSON.stringify(error, null, 2));
     return [];
   }
 }

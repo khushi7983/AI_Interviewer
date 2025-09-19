@@ -60,27 +60,28 @@ const Header = ({ user }: HeaderProps) => {
               <BookOpen className="h-4 w-4" />
               Resources
             </Link>
+            
           </nav>
 
           {/* User Menu */}
           <div className="flex items-center gap-4">
             {user ? (
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-primary-200 rounded-full flex items-center justify-center">
-                    <User className="h-4 w-4 text-dark-100" />
-                  </div>
-                  <span className="text-light-100 hidden sm:block">{user.name}</span>
-                </div>
-                <Button
-                  onClick={handleSignOut}
-                  variant="ghost"
-                  size="sm"
-                  className="text-light-100 hover:text-primary-200 hover:bg-dark-300"
-                >
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              </div>
+    <Link href="/profile" className="flex items-center gap-2 cursor-pointer">
+      <div className="w-8 h-8 bg-primary-200 rounded-full flex items-center justify-center">
+        <User className="h-4 w-4 text-dark-100" />
+      </div>
+      <span className="text-light-100 hidden sm:block">{user.name}</span>
+    </Link>
+    <Button
+      onClick={handleSignOut}
+      variant="ghost"
+      size="sm"
+      className="text-light-100 hover:text-primary-200 hover:bg-dark-300"
+    >
+      <LogOut className="h-4 w-4" />
+    </Button>
+  </div>
             ) : (
               <div className="flex items-center gap-3">
                 <Button asChild variant="ghost" className="text-light-100 hover:text-primary-200">

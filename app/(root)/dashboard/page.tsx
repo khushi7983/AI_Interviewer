@@ -1,20 +1,54 @@
 import { BarChart3, TrendingUp, Clock, Target, Award, Users } from "lucide-react";
 import { getCurrentUser } from "@/lib/actions/auth.action";
-import { getInterviewsByUserId } from "@/lib/actions/general.action";
+import { getInterviewsByUserId, getFeedbackByInterviewId, getAllFeedbackByUserId } from "@/lib/actions/general.action";
 import { redirect } from "next/navigation";
 import AnalyticsChart from "@/components/AnalyticsChart";
+import InterviewCard from "@/components/InterviewCard";
+import RecentInterviewItem from "@/components/RecentInterviewItem";
 
 async function Dashboard() {
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
 
-  const interviews = await getInterviewsByUserId(user.id);
+  const [interviews, allFeedback] = await Promise.all([
+    getInterviewsByUserId(user.id),
+    getAllFeedbackByUserId(user.id),
+  ]);
   
   // Calculate statistics
   const totalInterviews = interviews?.length || 0;
-  const completedInterviews = interviews?.filter(i => i.finalized).length || 0;
-  const averageScore = 85; // This would be calculated from feedback scores
-  const improvementRate = 12; // This would be calculated from historical data
+  const completedInterviewsData = interviews?.filter(i => i.finalized) || [];
+  const completedInterviews = completedInterviewsData.length;
+
+  let averageScore = 0;
+  if (completedInterviews > 0) {
+    const feedbackPromises = completedInterviewsData.map(async (interview) => {
+      const feedback = allFeedback?.find(f => f.interviewId === interview.id);
+      return feedback?.totalScore || 0;
+    });
+    const scores = await Promise.all(feedbackPromises);
+    const totalScoreSum = scores.reduce((sum, score) => sum + score, 0);
+    averageScore = Math.round(totalScoreSum / completedInterviews);
+  }
+  
+  // Calculate dynamic data for AnalyticsChart - Interview Performance
+  const feedbackScores = allFeedback?.map(f => f.totalScore).filter((score): score is number => score !== null) || [];
+  const overallAverageScore = feedbackScores.length > 0 ? Math.round(feedbackScores.reduce((sum, score) => sum + score, 0) / feedbackScores.length) : 0;
+  const bestScore = feedbackScores.length > 0 ? Math.max(...feedbackScores) : 0;
+
+  const now = new Date();
+  const oneWeekAgo = new Date(now.setDate(now.getDate() - 7));
+  const oneMonthAgo = new Date(now.setMonth(now.getMonth() - 1));
+
+  const lastWeekFeedback = allFeedback?.filter(f => new Date(f.createdAt) >= oneWeekAgo) || [];
+  const lastWeekScores = lastWeekFeedback.map(f => f.totalScore).filter((score): score is number => score !== null) || [];
+  const lastWeekAverage = lastWeekScores.length > 0 ? Math.round(lastWeekScores.reduce((sum, score) => sum + score, 0) / lastWeekScores.length) : 0;
+
+  const lastMonthFeedback = allFeedback?.filter(f => new Date(f.createdAt) >= oneMonthAgo) || [];
+  const lastMonthScores = lastMonthFeedback.map(f => f.totalScore).filter((score): score is number => score !== null) || [];
+  const lastMonthAverage = lastMonthScores.length > 0 ? Math.round(lastMonthScores.reduce((sum, score) => sum + score, 0) / lastMonthScores.length) : 0;
+
+  const improvementRate = 12; // This would be calculated from historical data (keeping static for now)
 
   const stats = [
     {
@@ -48,7 +82,7 @@ async function Dashboard() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-white mb-2">
@@ -62,7 +96,7 @@ async function Dashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {stats.map((stat, index) => (
-          <div key={index} className="card p-6">
+          <div key={index} className="card p-10">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-light-100 text-sm font-medium">{stat.title}</p>
@@ -79,57 +113,37 @@ async function Dashboard() {
       {/* Analytics */}
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-white mb-6">Performance Analytics</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <AnalyticsChart
-            title="Skill Improvement Over Time"
-            data={[
-              { label: "Communication", value: 85, trend: 'up' },
-              { label: "Technical Knowledge", value: 78, trend: 'up' },
-              { label: "Problem Solving", value: 82, trend: 'stable' },
-              { label: "Confidence", value: 90, trend: 'up' },
-            ]}
-          />
+        <div className="grid grid-cols-1 gap-6">
+
           <AnalyticsChart
             title="Interview Performance"
             data={[
-              { label: "Last Week", value: 75, trend: 'up' },
-              { label: "Last Month", value: 82, trend: 'up' },
-              { label: "Overall Average", value: 85, trend: 'stable' },
-              { label: "Best Score", value: 95, trend: 'up' },
+              { label: "Last Week", value: lastWeekAverage, trend: lastWeekAverage >= (overallAverageScore * 0.95) ? 'up' : 'down' }, // Simple trend logic
+              { label: "Last Month", value: lastMonthAverage, trend: lastMonthAverage >= (overallAverageScore * 0.95) ? 'up' : 'down' },
+              { label: "Overall Average", value: overallAverageScore, trend: 'stable' },
+              { label: "Best Score", value: bestScore, trend: 'up' },
             ]}
           />
         </div>
       </div>
 
       {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1  gap-8">
         {/* Recent Interviews */}
         <div className="card p-6">
-          <h2 className="text-2xl font-semibold text-white mb-6">Recent Interviews</h2>
+          <h2 className="text-2xl font-semibold text-white mb-6">Your Interviews</h2>
           <div className="space-y-4">
-            {interviews?.slice(0, 5).map((interview) => (
-              <div key={interview.id} className="flex items-center justify-between p-4 bg-dark-200 rounded-lg">
-                <div>
-                  <h3 className="text-white font-medium">{interview.role}</h3>
-                  <p className="text-light-100 text-sm">
-                    {interview.type} • {interview.level}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-light-100 text-sm">
-                    {new Date(interview.createdAt).toLocaleDateString()}
-                  </p>
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    interview.finalized 
-                      ? 'bg-green-400/20 text-green-400' 
-                      : 'bg-yellow-400/20 text-yellow-400'
-                  }`}>
-                    {interview.finalized ? 'Completed' : 'In Progress'}
-                  </span>
-                </div>
-              </div>
-            ))}
-            {interviews?.length === 0 && (
+            {(interviews || [])?.slice(0, 5).map((interview) => {
+              const feedback = allFeedback?.find(f => f.interviewId === interview.id);
+              return (
+                <RecentInterviewItem
+                  key={interview.id}
+                  interview={interview}
+                  feedback={feedback}
+                />
+              );
+            })}
+            {(interviews || [])?.length === 0 && (
               <p className="text-light-100 text-center py-8">
                 No interviews yet. Start practicing to see your progress here!
               </p>

@@ -15,6 +15,8 @@ const InterviewCard = async ({
   type,
   techstack,
   createdAt,
+  showFeedbackButton = false,
+  showDownloadButton = false,
 }: InterviewCardProps) => {
   const feedback =
     userId && interviewId
@@ -34,7 +36,7 @@ const InterviewCard = async ({
     }[normalizedType] || "bg-light-600";
 
   const formattedDate = dayjs(
-  feedback?.createdAt?.toDate?.() || createdAt?.toDate?.() || Date.now()
+  feedback?.createdAt || createdAt || Date.now()
 ).format("MMM D, YYYY");
 
 
@@ -92,17 +94,28 @@ const InterviewCard = async ({
         <div className="flex flex-row justify-between">
           <DisplayTechIcons techStack={techstack || []} />
 
-          <Button className="btn-primary">
-            <Link
-              href={
-                feedback
-                  ? `/interview/${interviewId}/feedback`
-                  : `/interview/${interviewId}`
-              }
+          {
+            showFeedbackButton && feedback ? (
+              <Link href={`/interview/${interviewId}/feedback`}>
+                <Button className="btn-primary">Check Feedback</Button>
+              </Link>
+            ) : (
+              <Link href={`/interview/${interviewId}`}>
+                <Button className="btn-primary">View Interview</Button>
+              </Link>
+            )
+          }
+
+          {showDownloadButton && feedback && (
+            <Link 
+              href={`/api/feedback/download?interviewId=${interviewId}`}
+              passHref
             >
-              {feedback ? "Check Feedback" : "View Interview"}
+              <Button className="btn-secondary">
+                Download Feedback
+              </Button>
             </Link>
-          </Button>
+          )}
         </div>
       </div>
     </div>

@@ -41,6 +41,7 @@ export async function signUp(params: SignUpParams) {
     await db.collection("users").doc(uid).set({
       name,
       email,
+      createdAt: new Date().toISOString(), // Add creation timestamp
       // profileURL,
       // resumeURL,
     });
@@ -116,6 +117,7 @@ export async function getCurrentUser(): Promise<User | null> {
     return {
       ...userRecord.data(),
       id: userRecord.id,
+      createdAt: userRecord.data()?.createdAt, // Include createdAt from db
     } as User;
   } catch (error) {
     console.log(error);
