@@ -1,34 +1,22 @@
-import { Mail, Phone, MapPin, Send, MessageCircle } from "lucide-react";
-import { getCurrentUser } from "@/lib/actions/auth.action";
-import { redirect } from "next/navigation";
+"use client";
 
-async function Contact() {
-  const user = await getCurrentUser();
-  if (!user) redirect("/sign-in");
+import { useState } from "react";
+import { Mail, Phone, MapPin, Send, X } from "lucide-react";
+import { db } from "@/firebase/client";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
-  const contactInfo = [
-    {
-      icon: Mail,
-      title: "Email Us",
-      description: "Send us an email and we'll respond within 24 hours",
-      value: "support@elevateprep.com",
-      action: "mailto:support@elevateprep.com"
-    },
-    {
-      icon: Phone,
-      title: "Call Us",
-      description: "Speak with our support team (Mon-Fri, 9AM-6PM EST)",
-      value: "+1 (555) 123-4567",
-      action: "tel:+15551234567"
-    },
-    {
-      icon: MapPin,
-      title: "Visit Us",
-      description: "Our headquarters location",
-      value: "123 Tech Street, San Francisco, CA 94105",
-      action: "#"
-    }
-  ];
+function Contact() {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupType, setPopupType] = useState("success"); // 'success' or 'error'
 
   const topics = [
     "Technical Support",
@@ -36,12 +24,52 @@ async function Contact() {
     "Billing Questions",
     "Feature Requests",
     "Bug Reports",
-    "General Feedback"
+    "General Feedback",
   ];
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      await addDoc(collection(db, "contacts"), {
+        ...formData,
+        createdAt: serverTimestamp(),
+      });
+
+      setPopupMessage("Message Sent Successfully\nThanks for reaching out! We'll get back to you shortly.");
+      setPopupType("success");
+      setIsPopupOpen(true);
+
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Error sending message:", error);
+
+      setPopupMessage("Message Failed, Please Try Again\nSomething went wrong. Please try again later.");
+      setPopupType("error");
+      setIsPopupOpen(true);
+    }
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+    // Optionally retry logic for error can be added here
+    if (popupType === "error") {
+      console.log("Retry logic can be implemented here");
+    }
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-white mb-4">Contact Us</h1>
         <p className="text-xl text-light-100">
@@ -53,139 +81,144 @@ async function Contact() {
         {/* Contact Form */}
         <div className="card p-8">
           <h2 className="text-2xl font-semibold text-white mb-6">Send us a Message</h2>
-          <form className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-light-100 text-sm font-medium mb-2">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 bg-dark-200 border border-border rounded-lg text-light-100 placeholder-light-100 focus:outline-none focus:ring-2 focus:ring-primary-200"
-                  placeholder="Your first name"
-                />
-              </div>
-              <div>
-                <label className="block text-light-100 text-sm font-medium mb-2">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 bg-dark-200 border border-border rounded-lg text-light-100 placeholder-light-100 focus:outline-none focus:ring-2 focus:ring-primary-200"
-                  placeholder="Your last name"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-light-100 text-sm font-medium mb-2">
-                Email Address
-              </label>
               <input
-                type="email"
-                className="w-full px-4 py-3 bg-dark-200 border border-border rounded-lg text-light-100 placeholder-light-100 focus:outline-none focus:ring-2 focus:ring-primary-200"
-                placeholder="your.email@example.com"
-                defaultValue={user.email}
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                placeholder="Your first name"
+                className="w-full px-4 py-3 bg-dark-200 border border-border rounded-lg text-light-100"
+              />
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                placeholder="Your last name"
+                className="w-full px-4 py-3 bg-dark-200 border border-border rounded-lg text-light-100"
               />
             </div>
 
-            <div>
-              <label className="block text-light-100 text-sm font-medium mb-2">
-                Subject
-              </label>
-              <select className="w-full px-4 py-3 bg-dark-200 border border-border rounded-lg text-light-100 focus:outline-none focus:ring-2 focus:ring-primary-200">
-                <option value="">Select a topic</option>
-                {topics.map((topic, index) => (
-                  <option key={index} value={topic}>{topic}</option>
-                ))}
-              </select>
-            </div>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="your.email@example.com"
+              className="w-full px-4 py-3 bg-dark-200 border border-border rounded-lg text-light-100"
+            />
 
-            <div>
-              <label className="block text-light-100 text-sm font-medium mb-2">
-                Message
-              </label>
-              <textarea
-                rows={6}
-                className="w-full px-4 py-3 bg-dark-200 border border-border rounded-lg text-light-100 placeholder-light-100 focus:outline-none focus:ring-2 focus:ring-primary-200 resize-none"
-                placeholder="Tell us how we can help you..."
-              ></textarea>
-            </div>
+            <select
+              name="subject"
+              value={formData.subject}
+              onChange={handleChange}
+              className="w-full px-4 py-3 bg-dark-200 border border-border rounded-lg text-light-100"
+            >
+              <option value="">Select a topic</option>
+              {topics.map((topic, i) => (
+                <option key={i} value={topic}>
+                  {topic}
+                </option>
+              ))}
+            </select>
 
-            <button type="submit" className="btn-primary w-full flex items-center justify-center gap-2">
+            <textarea
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              rows={6}
+              placeholder="Tell us how we can help you..."
+              className="w-full px-4 py-3 bg-dark-200 border border-border rounded-lg text-light-100 resize-none"
+            ></textarea>
+
+            <button
+              type="submit"
+              className="btn-primary w-full flex items-center justify-center gap-2"
+            >
               <Send className="h-5 w-5" />
               Send Message
             </button>
           </form>
         </div>
 
-        {/* Contact Information */}
-        <div className="space-y-8">
-          {/* Contact Methods */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-semibold text-white">Get in Touch</h2>
-            {contactInfo.map((info, index) => (
-              <div key={index} className="flex items-start gap-4 p-4 bg-dark-200 rounded-lg">
-                <div className="p-3 bg-primary-200/10 rounded-lg">
-                  <info.icon className="h-6 w-6 text-primary-200" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-white font-medium mb-1">{info.title}</h3>
-                  <p className="text-light-100 text-sm mb-2">{info.description}</p>
-                  <a 
-                    href={info.action}
-                    className="text-primary-200 hover:text-primary-100 transition-colors"
-                  >
-                    {info.value}
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Live Chat */}
-          <div className="card p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-green-400/10 rounded-lg">
-                <MessageCircle className="h-6 w-6 text-green-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-white">Live Chat</h3>
+        {/* Contact Info Section */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-semibold text-white">Get in Touch</h2>
+          <div className="flex items-start gap-4 p-4 bg-dark-200 rounded-lg">
+            <Mail className="h-6 w-6 text-primary-200" />
+            <div>
+              <h3 className="text-white font-medium">Email Us</h3>
+              <a href="mailto:support@elevateprep.com" className="text-primary-200">
+                support@elevateprep.com
+              </a>
             </div>
-            <p className="text-light-100 mb-4">
-              Chat with our support team in real-time for immediate assistance.
-            </p>
-            <button className="btn-secondary w-full flex items-center justify-center gap-2">
-              <MessageCircle className="h-5 w-5" />
-              Start Live Chat
-            </button>
           </div>
-
-          {/* Response Time */}
-          <div className="card p-6">
-            <h3 className="text-xl font-semibold text-white mb-4">Response Times</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-light-100">Live Chat</span>
-                <span className="text-primary-200 font-medium">Immediate</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-light-100">Email</span>
-                <span className="text-primary-200 font-medium">Within 24 hours</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-light-100">Phone</span>
-                <span className="text-primary-200 font-medium">Mon-Fri, 9AM-6PM EST</span>
-              </div>
+          <div className="flex items-start gap-4 p-4 bg-dark-200 rounded-lg">
+            <Phone className="h-6 w-6 text-primary-200" />
+            <div>
+              <h3 className="text-white font-medium">Call Us</h3>
+              <a href="tel:+15551234567" className="text-primary-200">
+                +1 (555) 123-4567
+              </a>
+            </div>
+          </div>
+          <div className="flex items-start gap-4 p-4 bg-dark-200 rounded-lg">
+            <MapPin className="h-6 w-6 text-primary-200" />
+            <div>
+              <h3 className="text-white font-medium">Visit Us</h3>
+              <p className="text-light-100 text-sm">
+                123 Tech Street, San Francisco, CA 94105
+              </p>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Popup Modal */}
+      {isPopupOpen && (
+        <dialog open className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-gradient-to-br from-dark-300 to-dark-400 border-2 rounded-xl p-6 w-full max-w-md shadow-2xl animate-fade-in">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold text-white">
+                {popupType === "success" ? "Success!" : "Error!"}
+              </h3>
+              <button
+                onClick={closePopup}
+                className="text-light-100 hover:text-white transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            <p className="text-light-100 mb-6">{popupMessage.split("\n").map((line, i) => (
+              <span key={i}>{line}<br /></span>
+            ))}</p>
+            {popupType === "error" && (
+              <button
+                onClick={closePopup}
+                className="btn-primary w-full flex items-center justify-center gap-2"
+              >
+                Retry
+              </button>
+            )}
+          </div>
+        </dialog>
+      )}
     </div>
   );
 }
 
+// Animation CSS (add to your global stylesheet, e.g., globals.css)
+const styles = `
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+`;
+// Ensure this is included in your CSS file or use a <style> tag if needed
+
 export default Contact;
-
-
-
-
