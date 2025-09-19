@@ -36,6 +36,7 @@ interface User {
   name: string;
   email: string;
   id: string;
+  createdAt?: string;
 }
 
 interface InterviewCardProps {
@@ -45,6 +46,8 @@ interface InterviewCardProps {
   type: string;
   techstack: string[];
   createdAt?: string;
+  showFeedbackButton?: boolean;
+  showDownloadButton?: boolean;
 }
 
 interface AgentProps {

@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/actions/auth.action";
 import { getInterviewsByUserId } from "@/lib/actions/general.action";
 import { redirect } from "next/navigation";
 
+
 async function Profile() {
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
@@ -45,9 +46,9 @@ async function Profile() {
   const recentInterviews = interviews?.slice(0, 5) || [];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Profile Header */}
-      <div className="card p-8 mb-8">
+      <div className="card p-10 mb-6">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
           <div className="w-24 h-24 bg-primary-200 rounded-full flex items-center justify-center">
             <User className="h-12 w-12 text-dark-100" />
@@ -64,10 +65,10 @@ async function Profile() {
                 <span>Joined {joinDate}</span>
               </div>
             </div>
-            <button className="btn-secondary flex items-center gap-2">
+            {/* <button className="btn-secondary flex items-center gap-2">
               <Edit3 className="h-4 w-4" />
               Edit Profile
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
@@ -184,33 +185,6 @@ async function Profile() {
         </div>
       </div>
 
-      {/* Settings */}
-      <div className="card p-6 mt-8">
-        <h2 className="text-2xl font-semibold text-white mb-6">Account Settings</h2>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-dark-200 rounded-lg">
-            <div className="flex items-center gap-3">
-              <Settings className="h-5 w-5 text-light-100" />
-              <div>
-                <h3 className="text-white font-medium">Notification Preferences</h3>
-                <p className="text-light-100 text-sm">Manage your email and push notifications</p>
-              </div>
-            </div>
-            <button className="btn-secondary">Configure</button>
-          </div>
-          
-          <div className="flex items-center justify-between p-4 bg-dark-200 rounded-lg">
-            <div className="flex items-center gap-3">
-              <User className="h-5 w-5 text-light-100" />
-              <div>
-                <h3 className="text-white font-medium">Privacy Settings</h3>
-                <p className="text-light-100 text-sm">Control your data and privacy preferences</p>
-              </div>
-            </div>
-            <button className="btn-secondary">Manage</button>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
