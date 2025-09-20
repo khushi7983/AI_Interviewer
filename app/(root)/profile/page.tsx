@@ -1,6 +1,6 @@
 import { User, Mail, Calendar, Award, Settings, Edit3 } from "lucide-react";
 import { getCurrentUser } from "@/lib/actions/auth.action";
-import { getInterviewsByUserId } from "@/lib/actions/general.action";
+import { getInterviewsByUserId, getAllFeedbackByUserId } from "@/lib/actions/general.action";
 import { redirect } from "next/navigation";
 
 
@@ -9,11 +9,17 @@ async function Profile() {
   if (!user) redirect("/sign-in");
 
   const interviews = await getInterviewsByUserId(user.id);
+  const allFeedback = await getAllFeedbackByUserId(user.id);
   
   // Calculate user statistics
   const totalInterviews = interviews?.length || 0;
   const completedInterviews = interviews?.filter(i => i.finalized).length || 0;
-  const averageScore = 85; // This would be calculated from feedback scores
+  const averageScore =
+    allFeedback && allFeedback.length > 0
+      ? Math.round(
+          allFeedback.reduce((sum, f) => sum + (f.totalScore || 0), 0) / allFeedback.length
+        )
+      : 0;
   const joinDate = new Date().toLocaleDateString(); // This would come from user data
 
   const achievements = [
