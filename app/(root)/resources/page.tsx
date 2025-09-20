@@ -24,7 +24,7 @@ async function Resources() {
           type: "Video",
           icon: Video,
           rating: 4.9,
-          link: "https://www.youtube.com/watch?v=4w4t4dHHAjE", // YouTube video on STAR method by Life Work Balance
+          link: "https://youtu.be/2uM7gYuOvr4?si=9nUKVzBwSukA-yfr", // YouTube video on STAR method by Life Work Balance
         },
         {
           title: "Technical Interview Prep",
@@ -53,7 +53,7 @@ async function Resources() {
           type: "Course",
           icon: BookOpen,
           rating: 4.6,
-          link: "https://www.coursera.org/learn/data-science-interview-prep", // Coursera data science interview prep (hypothetical, replaced with a relevant course)
+          link: "https://www.datainterview.com/bootcamp/ds", // Coursera data science interview prep (hypothetical, replaced with a relevant course)
         },
         {
           title: "Product Management Interviews",
@@ -74,7 +74,7 @@ async function Resources() {
           type: "Video",
           icon: Video,
           rating: 4.7,
-          link: "https://www.youtube.com/watch?v=0bXtm65ZDi8", // YouTube video on communication skills for interviews by Andrew LaCivita
+          link: "https://youtube.com/playlist?list=PLv9O1ieIsEgfbNVwPqWxlZq_JtKmnsubv&si=rc6tsEWLYRPTOq-h", // YouTube video on communication skills for interviews by Andrew LaCivita
         },
         {
           title: "Confidence Building",
@@ -82,7 +82,7 @@ async function Resources() {
           type: "Guide",
           icon: Users,
           rating: 4.8,
-          link: "https://www.forbes.com/sites/forbescoachescouncil/2021/03/15/15-ways-to-build-confidence-before-a-job-interview/", // Forbes article on confidence building
+          link: "https://youtu.be/7e6RSGdvHD8?si=Dck1zkexX8XnaRQY", // Forbes article on confidence building
         },
         {
           title: "Body Language Mastery",
@@ -90,7 +90,7 @@ async function Resources() {
           type: "Video",
           icon: Video,
           rating: 4.6,
-          link: "https://www.youtube.com/watch?v=UkO0JTLT1Os", // YouTube video on body language in interviews by Vanessa Van Edwards
+          link: "https://youtu.be/VHUrdELKjDw?si=XksWugvJlei5FJUD", // YouTube video on body language in interviews by Vanessa Van Edwards
         },
       ],
     },
@@ -143,12 +143,12 @@ async function Resources() {
           link: "https://interviewing.io/",
         },
         {
-          title: "Gainlo",
+          title: "Grow with Google",
           description: "Mock interviews with industry professionals.",
           type: "Platform",
           icon: Users,
           rating: 4.4,
-          link: "https://www.gainlo.co/",
+          link: "https://grow.google/certificates/interview-warmup/",
         },
       ],
     },
@@ -177,7 +177,7 @@ async function Resources() {
           type: "Guide",
           icon: Users,
           rating: 4.5,
-          link: "https://www.linkedin.com/help/linkedin/answer/a1343203",
+          link: "https://resumeworded.com/linkedin-review/optimize-linkedin-profile",
         },
       ],
     },

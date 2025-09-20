@@ -150,8 +150,8 @@ function Contact() {
             <Mail className="h-6 w-6 text-primary-200" />
             <div>
               <h3 className="text-white font-medium">Email Us</h3>
-              <a href="mailto:support@elevateprep.com" className="text-primary-200">
-                support@elevateprep.com
+              <a href="mailto:khushipanwargzb@gmail.com" className="text-primary-200">
+                khushipanwargzb@gmail.com
               </a>
             </div>
           </div>
@@ -159,8 +159,8 @@ function Contact() {
             <Phone className="h-6 w-6 text-primary-200" />
             <div>
               <h3 className="text-white font-medium">Call Us</h3>
-              <a href="tel:+15551234567" className="text-primary-200">
-                +1 (555) 123-4567
+              <a href="tel:+91 8595996585" className="text-primary-200">
+                +91 8595996585
               </a>
             </div>
           </div>
@@ -169,7 +169,7 @@ function Contact() {
             <div>
               <h3 className="text-white font-medium">Visit Us</h3>
               <p className="text-light-100 text-sm">
-                123 Tech Street, San Francisco, CA 94105
+                Ghaziabad, Uttar Pradesh, India
               </p>
             </div>
           </div>
