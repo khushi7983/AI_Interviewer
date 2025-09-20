@@ -4,12 +4,29 @@
 import { Download } from "lucide-react";
 
 // Simulated PDF generation function (replace with actual implementation)
-const generatePDF = async (feedback) => {
+type Feedback = {
+  comments?: string;
+  // Add other properties as needed
+};
+
+const generatePDF = async (feedback: Feedback) => {
   console.log("Generating PDF for feedback:", feedback);
   return "/api/download-feedback"; // Replace with actual endpoint
 };
 
-const FeedbackCard = ({ interview, feedback }) => {
+type Interview = {
+  id: string;
+  type: string;
+  createdAt: string | number | Date;
+  // Add other properties as needed
+};
+
+type FeedbackCardProps = {
+  interview: Interview;
+  feedback: Feedback;
+};
+
+const FeedbackCard = ({ interview, feedback }: FeedbackCardProps) => {
   return (
     <div className="card p-6 bg-dark-300 rounded-xl shadow-md">
       <div className="flex items-center justify-between mb-4">

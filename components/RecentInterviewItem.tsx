@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { Button } from "./ui/button";
 import dayjs from "dayjs";
-import { Interview, Feedback } from "@/types";
+// If Interview and Feedback are global types from a .d.ts file, use type-only import (for type checking only):
+// Remove the import entirely and rely on global types, or use:
+// import type { Interview, Feedback } from "@/types";
+// If Interview and Feedback are global types from a .d.ts file, no import is needed.
+
+// If you want to import from a module, move Interview and Feedback to a .ts file (not .d.ts) and import as usual.
 
 interface RecentInterviewItemProps {
   interview: Interview;
