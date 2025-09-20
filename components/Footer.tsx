@@ -21,11 +21,11 @@ const Footer = () => {
             </div>
             <p className="text-light-100 mb-6 max-w-md">
               Elevate your interview skills with AI-powered practice sessions, 
-              real-time feedback, and personalized coaching. Master your next interview.
+              real-time feedback, and actionable insights. Master your next interview.
             </p>
             <div className="flex space-x-4">
               <a 
-                href="https://github.com" 
+                href="https://github.com/khushi7983" 
                 className="text-light-100 hover:text-primary-200 transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -33,7 +33,7 @@ const Footer = () => {
                 <Github className="h-5 w-5" />
               </a>
               <a 
-                href="https://twitter.com" 
+                href="https://x.com/khushii__panwar" 
                 className="text-light-100 hover:text-primary-200 transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -41,7 +41,7 @@ const Footer = () => {
                 <Twitter className="h-5 w-5" />
               </a>
               <a 
-                href="https://linkedin.com" 
+                href="https://www.linkedin.com/in/khushi-panwar-139323256/" 
                 className="text-light-100 hover:text-primary-200 transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -49,7 +49,7 @@ const Footer = () => {
                 <Linkedin className="h-5 w-5" />
               </a>
               <a 
-                href="mailto:support@elevateprep.com" 
+                href="mailto:khushipanwargzb@gmail.com" 
                 className="text-light-100 hover:text-primary-200 transition-colors"
               >
                 <Mail className="h-5 w-5" />
@@ -89,11 +89,6 @@ const Footer = () => {
             <h3 className="text-lg font-semibold text-white mb-4">Support</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/help" className="text-light-100 hover:text-primary-200 transition-colors">
-                  Help Center
-                </Link>
-              </li>
-              <li>
                 <Link href="/contact" className="text-light-100 hover:text-primary-200 transition-colors">
                   Contact Us
                 </Link>
@@ -115,7 +110,7 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="border-t border-border mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center">
           <p className="text-light-100 text-sm">
-            © 2024 ElevatePrep. All rights reserved.
+            © 2025 ElevatePrep. All rights reserved. Made with ❤️ by Khushi Panwar.
           </p>
           <button
             onClick={scrollToTop}
