@@ -129,9 +129,9 @@ async function Home() {
       {/* User's Interviews Section - Only show if user is logged in */}
       {user ? (
         <>
-          <section className="py-20 lg:py-24">
+          <section className="py-20 lg:py-24 ">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center mb-12">
+              <div className="text-center mb-12 ">
                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
                   Your Recent Interviews
                 </h2>
@@ -158,7 +158,7 @@ async function Home() {
                       ))}
                   </div>
                 ) : (
-                  <div className="card p-12 text-center">
+                  <div className="card p-12 text-center w-7xl">
                     <div className="w-16 h-16 bg-primary-200 rounded-full flex items-center justify-center mx-auto mb-6">
                       <Zap className="h-8 w-8 text-dark-100" />
                     </div>
